@@ -7,22 +7,15 @@ h1 {
   font-size:120%;
 }
 
-dl {
-  border: 1px solid #ccc;
+table {
   background-color:white;
-  border-radius:0.5em;
-  width:20em;
-  padding: 0.8em;
-  clear:left;
+  border-collapse:collapse;
 }
 
-dt {
-  font-weight:bold;
-  float:left;
-  clear:left;
-  width:9em;
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.2em 0.5em;
 }
-
-dd {
-  margin-left:10em;
+td p {
+  margin:0;
 }

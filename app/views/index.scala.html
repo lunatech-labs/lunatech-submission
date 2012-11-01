@@ -1,4 +1,4 @@
-@(submissions: Iterable[Map[String,Seq[String]]])
+@(submissions: Iterable[Map[String,Seq[String]]], columns: Iterable[String])
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,18 +18,37 @@
     </p>
 </form>
 
+<form method="post" action="/">
+    <p>
+        <select name="age"><option>under 18</option><option>18-30</option><option selected>30+</option></select>
+        <input name="name" value="Peter">
+        <input name="cocktail" value="Margarita">
+        <input name="cocktail" value="Caipirinha">
+        <button type="submit">Post</button>
+    </p>
+</form>
+
 <h1>Previous submissions</h1>
 
-@for(form <- submissions) {
-<dl>
-    @for((name, values) <- form) {
-        <dt>@name</dt>
-        @for(value <- values) {
-            <dd>@value</dd>
-        }
+<table>
+<tr>
+    @for(column <- columns) {
+        <th>@column</th>
     }
-</dl>
+</tr>
+@for(form <- submissions) {
+    <tr>
+    @for(column <- columns) {
+        <td>
+        @for(value <- form.get(column)) {
+            <p>@value</p>
+        }
+        </td>
+    }
+    </tr>
 }
+
+</table>
 
 </body>
 </html>

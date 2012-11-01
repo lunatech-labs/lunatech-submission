@@ -24,18 +24,20 @@ object Application extends Controller {
     Redirect(routes.Application.index())
   }
 
-
   /**
    * Display an index page with a list of form submissions.
    */
   def index = Action {
-    Ok(views.html.index(submissions))
+    val submissions = load
+    val columns = submissions.flatMap(_.keys).toSet.toList
+
+    Ok(views.html.index(submissions, columns))
   }
 
   /**
    * Read previous submissions from storage, parsing them as UTF-8 form-encoded text.
    */
-  private def submissions(): Iterable[Map[String,Seq[String]]] = {
+  private def load(): Iterable[Map[String,Seq[String]]] = {
     val records = SubmissionJournal.recent
     records.map { record =>
       FormUrlEncodedParser.parse(new String(record, Charset.forName("UTF-8")))
