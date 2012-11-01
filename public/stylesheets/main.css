@@ -1,0 +1,28 @@
+body {
+ font-family: "Helvetica Neue", sans-serif;
+ background:#ddd;
+}
+
+h1 {
+  font-size:120%;
+}
+
+dl {
+  border: 1px solid #ccc;
+  background-color:white;
+  border-radius:0.5em;
+  width:20em;
+  padding: 0.8em;
+  clear:left;
+}
+
+dt {
+  font-weight:bold;
+  float:left;
+  clear:left;
+  width:9em;
+}
+
+dd {
+  margin-left:10em;
+}

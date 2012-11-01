@@ -1,0 +1,35 @@
+@(submissions: Iterable[Map[String,Seq[String]]])
+<!DOCTYPE html>
+<html>
+<head>
+<title>Submission</title>
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+</head>
+<body>
+
+<h1>Test form</h1>
+
+<form method="post" action="/">
+    <p>
+        <select name="age"><option>under 18</option><option selected>18-30</option><option>30+</option></select>
+        <select name="sex"><option>male</option><option>female</option></select>
+        <input name="location" value="Rotterdam">
+        <button type="submit">Post</button>
+    </p>
+</form>
+
+<h1>Previous submissions</h1>
+
+@for(form <- submissions) {
+<dl>
+    @for((name, values) <- form) {
+        <dt>@name</dt>
+        @for(value <- values) {
+            <dd>@value</dd>
+        }
+    }
+</dl>
+}
+
+</body>
+</html>
