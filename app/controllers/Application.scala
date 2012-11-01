@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc._
-import models.SubmissionJournal
+import models.Submissions
 import java.nio.charset.Charset
 import play.core.parsers.FormUrlEncodedParser
 
@@ -19,7 +19,7 @@ object Application extends Controller {
    */
   def submit = Action(parse.raw) { implicit request =>
     request.body.asBytes(MaxBodyLengthBytes).map { rawRequest =>
-      SubmissionJournal write rawRequest
+      Submissions save rawRequest
     }
     Redirect(routes.Application.index())
   }
@@ -30,7 +30,6 @@ object Application extends Controller {
   def index = Action {
     val submissions = load
     val columns = submissions.flatMap(_.keys).toSet.toList
-
     Ok(views.html.index(submissions, columns))
   }
 
@@ -38,8 +37,7 @@ object Application extends Controller {
    * Read previous submissions from storage, parsing them as UTF-8 form-encoded text.
    */
   private def load(): Iterable[Map[String,Seq[String]]] = {
-    val records = SubmissionJournal.recent
-    records.map { record =>
+    Submissions.list.map { record =>
       FormUrlEncodedParser.parse(new String(record, Charset.forName("UTF-8")))
     }
   }

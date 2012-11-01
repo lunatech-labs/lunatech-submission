@@ -1,4 +1,4 @@
-import models.SubmissionJournal
+import models.Submissions
 import play.api.GlobalSettings
 
 /**
@@ -7,6 +7,6 @@ import play.api.GlobalSettings
 object Global extends GlobalSettings {
 
   override def onStop(app: play.api.Application) {
-    SubmissionJournal.close
+    Submissions.close
   }
 }
