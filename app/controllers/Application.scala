@@ -15,13 +15,18 @@ object Application extends Controller {
 
   /**
    * Handle a POST request by writing the raw request body to persistent storage.
-   * TODO: add a way for the request to specify the redirect URL.
+   *
+   * @param redirectUrl Optional URL to redirect to after handling the submission
    */
-  def submit = Action(parse.raw) { implicit request =>
+  def submit(redirectUrl: Option[String]) = Action(parse.raw) { implicit request =>
     request.body.asBytes(MaxBodyLengthBytes).map { rawRequest =>
       Submissions save rawRequest
     }
-    Redirect(routes.Application.index())
+    redirectUrl.map{url =>
+      Redirect(url)
+    }.getOrElse{
+      Redirect(routes.Application.index())
+    }
   }
 
   /**

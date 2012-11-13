@@ -10,7 +10,8 @@ This may turn out to be fast and scalable for a large number of requests, for th
 
 Submit HTTP POST requests to `/`.
 
+To redirect to another page after the submission, add a URL in the request
+
 ## To do
 
-* Add a way for the request to specify a redirect URL with the request, e.g. in the query string.
 * Add ODF spreadsheet export for all submissions.

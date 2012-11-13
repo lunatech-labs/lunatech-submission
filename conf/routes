@@ -1,4 +1,4 @@
-POST /   controllers.Application.submit
+POST /   controllers.Application.submit(redirect: Option[String])
 GET  /   controllers.Application.index
 
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
