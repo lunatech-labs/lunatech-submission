@@ -4,6 +4,7 @@ import play.api.mvc._
 import models.Submissions
 import java.nio.charset.Charset
 import play.core.parsers.FormUrlEncodedParser
+import play.api.Logger
 
 /**
  * Web application controller, whose main purpose is to handle HTTP POST requests.
@@ -20,6 +21,7 @@ object Application extends Controller {
    */
   def submit(redirectUrl: Option[String]) = Action(parse.raw) { implicit request =>
     request.body.asBytes(MaxBodyLengthBytes).map { rawRequest =>
+      Logger.debug(new String(rawRequest, "UTF-8"))
       Submissions save rawRequest
     }
     redirectUrl.map{url =>

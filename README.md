@@ -8,7 +8,12 @@ The use case is short-lived marketing campaigns where thousands of people submit
 
 ## Usage
 
-Submit HTTP POST requests to `/`.
+Submit HTML forms with method POST to `/`. This is an HTTP POST request, for example (omitting various headers):
+
+    POST / HTTP/1.1
+    Content-Type: application/x-www-form-urlencoded
+
+    age=18-30&sex=male&location=Rotterdam
 
 To redirect to another page after the submission, add a URL in the request’s `redirect` query string parameter, e.g. `POST /?redirect=http%3A%2F%2Fexample.com%2Fthank-you`.
 
@@ -24,3 +29,20 @@ This version does not use Akka, but it would presumably be possible to introduce
 
 * Secure access to the export.
 * Add ODF spreadsheet export for all submissions.
+
+## Benchmarks
+
+To get a rough idea of how this works with Play, use Apache Bench:
+
+`ab =k -n 10000 -c 1 -p public/example.txt -T "application/x-www-form-urlencoded" "http://localhost:9000/?redirect=http%3A%2F%2Fexample.com%2Fthank-you"`
+
+Results from a MacBook Pro, 2.7 GHz Intel Core i7, 8 GB, SSD:
+
+* c=1, requests/s=3160
+* c=2, requests/s=4690
+* c=5, requests/s=8130
+* c=10, requests/s=9980
+* c=20, requests/s=11700
+* c=50, requests/s=12900
+* c=100, requests/s=13400
+
