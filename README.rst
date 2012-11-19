@@ -15,6 +15,8 @@ to run.
 Usage
 -----
 
+This is a standard Play 2.0 application, so to run it in production mode, run `play start` in this directory.
+
 Submit HTML forms with method POST to ``/``. This is an HTTP POST
 request, for example (omitting various headers):
 
@@ -29,14 +31,16 @@ To redirect to another page after the submission, add a URL in the
 request’s ``redirect`` query string parameter, e.g.
 ``POST /?redirect=http%3A%2F%2Fexample.com%2Fthank-you``.
 
-Technical design
-----------------
+High-level design and architecture
+----------------------------------
+
+This is a Play application that consists of a single controller for handling form submissions, and a single model that is a facade for a simple event store.
 
 Submissions are persisted using
 `Journal.IO <https://github.com/sbtourist/Journal.IO>`_, which provides
 thread-safe file-based persistence.
 
-This is reasonably fast and scalable for a large number of requests, for
+This is fast and scalable for a large number of requests, for
 the case that there are many submissions but that only have to be read
 once. This is because the application writes the raw request data
 directly to the journal, which is designed for fast writes, and only
