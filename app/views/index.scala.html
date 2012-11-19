@@ -1,54 +1,45 @@
-@(submissions: Iterable[Map[String,Seq[String]]], columns: Iterable[String])
-<!DOCTYPE html>
-<html>
-<head>
-<title>Submission</title>
-<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-</head>
-<body>
+@()
 
-<h1>Test form</h1>
+@main("Submission") {
 
-<form method="post" action="/">
+  <p>A minimal web application to persist HTML form submissions.</p>
+
+  <p>Use any HTML form to submit data to this URL using a POST request. Use the <a href="@routes.Application.export">export
+    page</a> to view results.</p>
+
+  <h2>Demo</h2>
+
+  <form method="post" action="/">
+    <p>Submit without redirect: <code>&lt;form method="post" action="/"&gt;</code></p>
+
     <p>
-        <select name="age"><option>under 18</option><option selected>18-30</option><option>30+</option></select>
-        <select name="sex"><option>male</option><option>female</option></select>
-        <input name="location" value="Rotterdam">
-        <button type="submit">Post</button>
+      <select name="age">
+        <option>under 18</option>
+        <option selected>18-30</option>
+        <option>30+</option>
+      </select>
+      <select name="sex">
+        <option>male</option>
+        <option>female</option>
+      </select>
+      <input name="location" value="Rotterdam">
+      <button type="submit">Post</button>
     </p>
-</form>
+  </form>
 
-<form method="post" action="/?redirect=http%3A%2F%2Fexample.com%2Fthank-you">
+  <form method="post" action="/?redirect=http%3A%2F%2Fexample.com%2Fthank-you">
+    <p>Submit with redirect: <code>&lt;form method="post" action="/?redirect=http%3A%2F%2Fexample.com%2Fthank-you"&gt;</code></p>
+
     <p>
-        <select name="age"><option>under 18</option><option>18-30</option><option selected>30+</option></select>
-        <input name="name" value="Peter">
-        <input name="cocktail" value="Margarita">
-        <input name="cocktail" value="Caipirinha">
-        <button type="submit">Post</button>
+      <select name="age">
+        <option>under 18</option>
+        <option>18-30</option>
+        <option selected>30+</option>
+      </select>
+      <input name="name" value="Peter">
+      <input name="cocktail" value="Margarita">
+      <input name="cocktail" value="Caipirinha">
+      <button type="submit">Post</button>
     </p>
-</form>
-
-<h1>Previous submissions</h1>
-
-<table>
-<tr>
-    @for(column <- columns) {
-        <th>@column</th>
-    }
-</tr>
-@for(form <- submissions) {
-    <tr>
-    @for(column <- columns) {
-        <td>
-        @for(value <- form.get(column)) {
-            <p>@value</p>
-        }
-        </td>
-    }
-    </tr>
+  </form>
 }
-
-</table>
-
-</body>
-</html>

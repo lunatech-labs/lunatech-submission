@@ -35,9 +35,16 @@ object Application extends Controller {
    * Display an index page with a list of form submissions.
    */
   def index = Action {
+    Ok(views.html.index())
+  }
+
+  /**
+   * Display an index page with a list of form submissions.
+   */
+  def export = Action {
     val submissions = load
     val columns = submissions.flatMap(_.keys).toSet.toList
-    Ok(views.html.index(submissions, columns))
+    Ok(views.html.export(submissions, columns))
   }
 
   /**

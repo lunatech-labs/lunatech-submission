@@ -1,0 +1,24 @@
+@(submissions: Iterable[Map[String,Seq[String]]], columns: Iterable[String])
+
+@main("Export submissions") {
+
+  <p>@submissions.size submission@if(submissions.size != 1) {s}</p>
+
+  <table>
+  <tr>
+  @for(column <- columns) {
+    <th>@column</th>
+  }
+  </tr>
+  @for(form <- submissions) {
+    <tr>
+    @for(column <- columns) {
+      <td>
+      @for(value <- form.get(column)) {
+        <p>@value</p>
+      }
+      </td>
+    }
+    </tr>
+  }
+}

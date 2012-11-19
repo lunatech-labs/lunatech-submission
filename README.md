@@ -21,18 +21,20 @@ To redirect to another page after the submission, add a URL in the request’s `
 
 Submissions are persisted using [Journal.IO](https://github.com/sbtourist/Journal.IO), which provides thread-safe file-based persistence.
 
-This may turn out to be fast and scalable for a large number of requests, for the case that there are many submissions but that only have to be read once. This is because the application writes the raw request data directly to the journal, which is designed for fast writes, and only parses the form-encoded data when it is read.
+This is reasonably fast and scalable for a large number of requests, for the case that there are many submissions but that only have to be read once. This is because the application writes the raw request data directly to the journal, which is designed for fast writes, and only parses the form-encoded data when it is read.
 
-This version does not use Akka, but it would presumably be possible to introduce an Actor front-end to the event store to allow massive scalability.
+In addition, for a large number of simulataneous requests, this takes advantage of Play’s built-in Akka-based routing. This presumably makes it unnecessary to introduce an Actor front-end to the event store.
 
 ## To do
 
-* Secure access to the export.
+A couple of enhancements would be required if this were to be used seriously.
+
+* Secure access to the export, e.g. with a secret URL or authentication.
 * Add ODF spreadsheet export for all submissions.
 
 ## Benchmarks
 
-To get a rough idea of how this works with Play, use Apache Bench:
+To get a rough idea of how this works with Play, use Apache Bench to post a large number of simultaneous POST requests:
 
 `ab =k -n 10000 -c 1 -p public/example.txt -T "application/x-www-form-urlencoded" "http://localhost:9000/?redirect=http%3A%2F%2Fexample.com%2Fthank-you"`
 
