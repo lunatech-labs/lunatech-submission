@@ -15,10 +15,10 @@ object Submissions {
 
   val journal = new Journal()
   journal.setDirectory(Play getFile JOURNAL_DIRECTORY)
-  journal.open
+  journal.open()
 
-  def close {
-    journal.close
+  def close() {
+    journal.close()
   }
 
   /**
@@ -29,12 +29,12 @@ object Submissions {
   }
 
   /**
-   * Read journal entries, most list first.
+   * Read journal entries, most recent first.
    */
-  def list(): Iterable[Array[Byte]] = {
+  def list: Iterable[Array[Byte]] = {
     import scala.collection.JavaConversions._
-    journal.undo().map { location =>
-      journal.read(location, ReadType.SYNC);
+    journal.undo map { location =>
+      journal.read(location, ReadType.SYNC)
     }
   }
 }

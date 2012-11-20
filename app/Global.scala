@@ -7,6 +7,6 @@ import play.api.GlobalSettings
 object Global extends GlobalSettings {
 
   override def onStop(app: play.api.Application) {
-    Submissions.close
+    Submissions.close()
   }
 }

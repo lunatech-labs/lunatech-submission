@@ -12,7 +12,7 @@ import play.api.Logger
  */
 object Application extends Controller {
 
-  val MaxBodyLengthBytes = 1024
+  val MaxBodyLengthBytes = 10 * 1024
 
   /**
    * Handle a POST request by writing the raw request body to persistent storage.
@@ -20,14 +20,17 @@ object Application extends Controller {
    * @param redirectUrl Optional URL to redirect to after handling the submission
    */
   def submit(redirectUrl: Option[String]) = Action(parse.raw) { implicit request =>
-    request.body.asBytes(MaxBodyLengthBytes).map { rawRequest =>
+    request.body.asBytes(MaxBodyLengthBytes) map { rawRequest =>
       Logger.debug(new String(rawRequest, "UTF-8"))
-      Submissions save rawRequest
+      Submissions.save(rawRequest)
+    } getOrElse {
+      Logger.error("Request body bigger than max length: %d bytes" format MaxBodyLengthBytes)
     }
-    redirectUrl.map{url =>
+
+    redirectUrl map { url =>
       Redirect(url)
-    }.getOrElse{
-      Redirect(routes.Application.index())
+    } getOrElse {
+      Redirect(routes.Application.index)
     }
   }
 
@@ -51,7 +54,7 @@ object Application extends Controller {
    * Read previous submissions from storage, parsing them as UTF-8 form-encoded text.
    */
   private def load(): Iterable[Map[String,Seq[String]]] = {
-    Submissions.list.map { record =>
+    Submissions.list map { record =>
       FormUrlEncodedParser.parse(new String(record, Charset.forName("UTF-8")))
     }
   }
