@@ -66,7 +66,7 @@ Benchmarks
 To get a rough idea of how this works with Play, use Apache Bench to
 post a large number of simultaneous POST requests:
 
-``ab =k -n 10000 -c 1 -p public/example.txt -T "application/x-www-form-urlencoded" "http://localhost:9000/?redirect=http%3A%2F%2Fexample.com%2Fthank-you"``
+``ab -k -n 10000 -c 1 -p public/example.txt -T "application/x-www-form-urlencoded" "http://localhost:9000/?redirect=http%3A%2F%2Fexample.com%2Fthank-you"``
 
 Results from a MacBook Pro, 2.7 GHz Intel Core i7, 8 GB, SSD:
 
