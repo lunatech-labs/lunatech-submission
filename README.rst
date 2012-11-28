@@ -70,10 +70,10 @@ post a large number of simultaneous POST requests:
 
 Results from a MacBook Pro, 2.7 GHz Intel Core i7, 8 GB, SSD:
 
--  c=1, requests/s=3160
--  c=2, requests/s=4690
--  c=5, requests/s=8130
--  c=10, requests/s=9980
+-  c=1, requests/s=3150
+-  c=2, requests/s=4730
+-  c=5, requests/s=7950
+-  c=10, requests/s=10000
 -  c=20, requests/s=11700
 -  c=50, requests/s=12900
 -  c=100, requests/s=13400

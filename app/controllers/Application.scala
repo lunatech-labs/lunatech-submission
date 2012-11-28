@@ -5,9 +5,8 @@ import models.Submissions
 import java.nio.charset.Charset
 import play.core.parsers.FormUrlEncodedParser
 import play.api.Logger
-import play.api.libs.iteratee.{Enumeratee, Enumerator}
-import play.api.libs.json.{Json, JsValue}
-import play.api.libs.concurrent.Promise
+import play.api.libs.iteratee.Enumeratee
+import play.api.libs.json.Json
 
 /**
  * Web application controller, whose main purpose is to handle HTTP POST requests.
@@ -50,11 +49,8 @@ object Application extends Controller {
    * It would be nicer to output a well-formed JSON array, but Play Framework 2.0 bug #666 prevents adding a final ']'.
    */
   def export = Action {
-    val toForm = Enumeratee.map[Array[Byte]] { parseFormData(_) }
-    val toJson = Enumeratee.map[Map[String,Seq[String]]] {  Json.toJson(_).toString + ",\n" }
-    val submissions = Submissions.all.through(toForm).through(toJson)
     val headers = "Content-Disposition" -> "attachment; filename=export.json"
-    Ok.stream(submissions).as("application/json").withHeaders(headers)
+    Ok.stream(Submissions.json).withHeaders(headers)
   }
 
 
@@ -62,16 +58,9 @@ object Application extends Controller {
    * Display a page with a table of recent form submissions.
    */
   def recent = Action {
-    val submissions = Submissions.recent map { parseFormData(_) }
+    val submissions = Submissions.recent map { Submissions.parseFormData(_) }
     val columns = submissions.flatMap(_.keys).toSet.toList
     Ok(views.html.recent(submissions, columns))
-  }
-
-  /**
-   * Parse a single submission as UTF-8 form-encoded text.
-   */
-  private def parseFormData(formData: Array[Byte]): Map[String,Seq[String]] = {
-    FormUrlEncodedParser.parse(new String(formData, Charset.forName("UTF-8")))
   }
 
 }

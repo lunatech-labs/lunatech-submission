@@ -7,6 +7,9 @@ import play.api.Play.current
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.concurrent.Promise
 import java.io.ByteArrayOutputStream
+import play.api.libs.json.Json
+import play.core.parsers.FormUrlEncodedParser
+import java.nio.charset.Charset
 
 /**
  * Journal.IO file-based persistence, using a singleton thread safe journal instance,
@@ -44,23 +47,30 @@ object Submissions {
   }
 
   /**
+   * Parse a single submission as UTF-8 form-encoded text.
+   */
+  def parseFormData(formData: Array[Byte]): Map[String,Seq[String]] = {
+    FormUrlEncodedParser.parse(new String(formData, Charset.forName("UTF-8")))
+  }
+
+  /**
    * An Enumerator that reads all journal entries, used for streaming output.
    * Read multiple records per chunk to improve performance.
    */
-  def all:Enumerator[Array[Byte]]  = {
+  def json:Enumerator[String]  = {
     val submissions = journal.redo().iterator()
 
-    Enumerator.fromCallback[Array[Byte]] (() => {
+    Enumerator.fromCallback[String] (() => {
       val submission = if (submissions.hasNext) {
-        val buffer = new ByteArrayOutputStream()
-        var bufferSize = 0
-        while (submissions.hasNext && bufferSize < MinChunkSizeBytes) {
+        val buffer = new StringBuilder()
+        while (submissions.hasNext && buffer.length < MinChunkSizeBytes) {
           val location = submissions.next()
           val record = journal.read(location, ReadType.ASYNC)
-          buffer.write(record)
-          bufferSize = bufferSize + record.length
+          val json = Json.toJson(parseFormData(record))
+          buffer.append(json.toString)
+          buffer.append(",")
         }
-        Some(buffer.toByteArray)
+        Some(buffer.toString)
       } else {
         None
       }
