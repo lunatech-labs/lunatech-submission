@@ -5,7 +5,7 @@ import models.Submissions
 import java.nio.charset.Charset
 import play.core.parsers.FormUrlEncodedParser
 import play.api.Logger
-import play.api.libs.iteratee.Enumeratee
+import play.api.libs.iteratee.{Enumerator, Enumeratee}
 import play.api.libs.json.Json
 
 /**
@@ -50,7 +50,7 @@ object Application extends Controller {
    */
   def export = Action {
     val headers = "Content-Disposition" -> "attachment; filename=export.json"
-    Ok.stream(Submissions.json).withHeaders(headers)
+    Ok.stream(Enumerator("[") >>> Submissions.json).withHeaders(headers)
   }
 
 

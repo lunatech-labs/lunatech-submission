@@ -1,6 +1,6 @@
 package models
 
-import journal.io.api.Journal
+import journal.io.api.{Location, Journal}
 import journal.io.api.Journal.{ReadType, WriteType}
 import play.api.Play
 import play.api.Play.current
@@ -19,6 +19,8 @@ object Submissions {
 
   val JournalDirectory = "data"
   val RecentPageSize = 20
+
+  // An 8KB HTTP response chunk size is Play’s default for streaming Enumerators.
   val MinChunkSizeBytes = 8 * 1024
 
   val journal = new Journal()
@@ -55,20 +57,25 @@ object Submissions {
 
   /**
    * An Enumerator that reads all journal entries, used for streaming output.
-   * Read multiple records per chunk to improve performance.
+   * Read multiple records (in the while loop) per chunk to improve performance.
    */
   def json:Enumerator[String]  = {
-    val submissions = journal.redo().iterator()
+    import scala.collection.JavaConversions._
+    val submissions: scala.collection.Iterable[Location] = journal.redo()
+    val submissionsIterator = submissions.iterator
 
     Enumerator.fromCallback[String] (() => {
-      val submission = if (submissions.hasNext) {
+      val submission = if (submissionsIterator.hasNext) {
         val buffer = new StringBuilder()
-        while (submissions.hasNext && buffer.length < MinChunkSizeBytes) {
-          val location = submissions.next()
+        while (submissionsIterator.hasNext && buffer.length < MinChunkSizeBytes) {
+          val location = submissionsIterator.next
           val record = journal.read(location, ReadType.ASYNC)
           val json = Json.toJson(parseFormData(record))
           buffer.append(json.toString)
-          buffer.append(",")
+
+          // Closing the JSON array here is a work-around for Lighthouse ticket:
+          // #666 Enumerator 'andThen' method doesn't remove EOF from left enumerator
+          buffer.append(if (submissionsIterator.hasNext) "," else "]")
         }
         Some(buffer.toString)
       } else {
