@@ -15,12 +15,11 @@ to run.
 Usage
 -----
 
-This is a standard Play 2.0 application, so to run it in production mode, run `play start` in this directory.
+This is a standard Play 2.0 application, so to run it in production mode,
+run `play start` in this directory.
 
 Submit HTML forms with method POST to ``/``. This is an HTTP POST
-request, for example (omitting various headers):
-
-::
+request, for example (omitting various headers)::
 
     POST / HTTP/1.1
     Content-Type: application/x-www-form-urlencoded
@@ -34,7 +33,9 @@ request’s ``redirect`` query string parameter, e.g.
 High-level design and architecture
 ----------------------------------
 
-This is a Play application that consists of a single controller for handling form submissions, and a single model that is a facade for a simple event store.
+This is a Play application that consists of a single controller for
+handling form submissions, and a single model that is a facade for a
+simple event store.
 
 Submissions are persisted using
 `Journal.IO <https://github.com/sbtourist/Journal.IO>`_, which provides
