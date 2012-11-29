@@ -1,12 +1,11 @@
 package models
 
-import journal.io.api.{Location, Journal}
+import journal.io.api.Journal
 import journal.io.api.Journal.{ReadType, WriteType}
-import play.api.Play
+import play.api.{Logger, Play}
 import play.api.Play.current
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.concurrent.Promise
-import java.io.ByteArrayOutputStream
 import play.api.libs.json.Json
 import play.core.parsers.FormUrlEncodedParser
 import java.nio.charset.Charset
@@ -44,7 +43,7 @@ object Submissions {
   def recent: Iterable[Array[Byte]] = {
     import scala.collection.JavaConversions._
     journal.undo.take(RecentPageSize) map { location =>
-      journal.read(location, ReadType.SYNC)
+      journal.read(location, ReadType.ASYNC)
     }
   }
 
@@ -60,22 +59,22 @@ object Submissions {
    * Read multiple records (in the while loop) per chunk to improve performance.
    */
   def json:Enumerator[String]  = {
-    import scala.collection.JavaConversions._
-    val submissions: scala.collection.Iterable[Location] = journal.redo()
-    val submissionsIterator = submissions.iterator
+    import scala.collection.JavaConverters._
+    val submissions = journal.redo().iterator.asScala
 
     Enumerator.fromCallback[String] (() => {
-      val submission = if (submissionsIterator.hasNext) {
+      val submission = if (submissions.hasNext) {
         val buffer = new StringBuilder()
-        while (submissionsIterator.hasNext && buffer.length < MinChunkSizeBytes) {
-          val location = submissionsIterator.next
+        while (submissions.hasNext && buffer.length < MinChunkSizeBytes) {
+          val location = submissions.next
           val record = journal.read(location, ReadType.ASYNC)
           val json = Json.toJson(parseFormData(record))
           buffer.append(json.toString)
 
           // Closing the JSON array here is a work-around for Lighthouse ticket:
           // #666 Enumerator 'andThen' method doesn't remove EOF from left enumerator
-          buffer.append(if (submissionsIterator.hasNext) "," else "]")
+          // The array is still opened in the controller because it's ugly to do it here.
+          buffer.append(if (submissions.hasNext) "," else "]")
         }
         Some(buffer.toString)
       } else {
