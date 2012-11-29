@@ -55,8 +55,9 @@ object Submissions {
   }
 
   /**
-   * An Enumerator that reads all journal entries, used for streaming output.
-   * Read multiple records (in the while loop) per chunk to improve performance.
+   * An Enumerator that reads all journal entries, used for streaming output. Read multiple records (in the while loop)
+   * per chunk to improve performance. The form data parsing and JSON formatting could be done in Enumeratees in the
+   * controller, but that doesn't perform so well.
    */
   def json:Enumerator[String]  = {
     import scala.collection.JavaConverters._
